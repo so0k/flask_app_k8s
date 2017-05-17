@@ -1,22 +1,14 @@
-# our base image
-FROM alpine:3.5
+FROM python:2-alpine
 
-# Install python and pip
-RUN apk add --update py2-pip
+#use gunicorn
+RUN pip install gunicorn==19.6.0
 
-# upgrade pip
-RUN pip install --upgrade pip
+#use flask
+RUN pip install flask
+COPY . /usr/src/app/
+WORKDIR /usr/src/app/
 
-# install Python modules needed by the Python app
-COPY requirements.txt /usr/src/app/
-RUN pip install --no-cache-dir -r /usr/src/app/requirements.txt
-
-# copy files required for the app to run
-COPY app.py /usr/src/app/
-COPY templates/index.html /usr/src/app/templates/
-
-# tell the port number the container should expose
 EXPOSE 5000
+ENTRYPOINT ["/usr/local/bin/gunicorn"]
 
-# run the application
-CMD ["python", "/usr/src/app/app.py"]
+CMD ["-w","1","-b","0.0.0.0:5000","--threads","1","app:app","--access-logfile","/dev/stdout","--error-logfile","/dev/stdout"]
