@@ -1,6 +1,7 @@
-.git
-README.md
-Dockerfile
+.git/
+kubernetes/
 imgur/
 .dockerignore
 .gitignore
+README.md
+Dockerfile

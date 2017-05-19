@@ -5,12 +5,13 @@ app = Flask(__name__)
 app.logger.addHandler(logging.StreamHandler())
 app.logger.setLevel(logging.INFO)
 
+images_path = 'config/images.txt'
 try:
-    with open('images.txt','r') as images_file:
+    with open(images_path,'r') as images_file:
         images = images_file.read().splitlines()
 except:
-    app.logger.error('error loading image-list.csv - falling back to default list')
-    # Default list of cat images
+    app.logger.warning('Unable to load {images} - falling back to default list'.format(images=images_path))
+    # Default list of cat images courtesy of buzzfeed
     images = [
         "http://ak-hdl.buzzfed.com/static/2013-10/enhanced/webdr05/15/9/anigif_enhanced-buzz-26388-1381844103-11.gif",
         "http://ak-hdl.buzzfed.com/static/2013-10/enhanced/webdr01/15/9/anigif_enhanced-buzz-31540-1381844535-8.gif",
