@@ -174,6 +174,11 @@ Inspect the generated ConfigMap manifest
 kubectl get cm app-images -o yaml
 ```
 
+Extract the data from the ConfigMap
+```
+kubectl get cm app-images -o jsonpath="{.data['images\.txt']}"
+```
+
 To use the ConfigMap define a volume in the PodSpec and mount the volume in the Container
 ```bash
 less kubernetes/deploy-app-configmap.yaml
