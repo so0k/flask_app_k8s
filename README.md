@@ -56,6 +56,21 @@ docker push $DOCKER_REPO/flask_app:1.0
 
 ## Deploying to Kubernetes
 
+For private registries, create a pull secret with your credentials first:
+```
+kubectl create secret docker-registry regsecret --docker-server=<your-registry-server> --docker-username=<your-name> --docker-password=<your-pword> --docker-email=<your-email>
+```
+
+and [add imagePullSecret to default service account](https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/#adding-imagepullsecrets-to-a-service-account)
+
+Oneliner:
+```
+kubectl get serviceaccounts default -o json |
+     jq  'del(.metadata.resourceVersion)'|
+     jq 'setpath(["imagePullSecrets"];[{"name":"regsecret"}])' |
+     kubectl replace serviceaccount default -f -
+```
+
 Imperatively create a Kubernetes Deployment for the application by supplying:
 
 - Name of the deployment
