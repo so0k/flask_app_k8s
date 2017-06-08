@@ -95,7 +95,7 @@ kubectl get serviceaccounts default -o json |
 ```
 Note: The `metadata.resourceVersion` field is used by the API server for optimistic concurrency. We are removing the `resourceVersion` and adding the `imagePullSecret` in the above oneliner.
 
-## Creating the Kubernetes deployment
+### Creating the Kubernetes deployment
 
 Imperatively create a Kubernetes Deployment for the application by supplying:
 
