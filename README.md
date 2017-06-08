@@ -49,27 +49,53 @@ docker stop money_machine && docker rm money_machine
 
 To prepare deployment, Push the Docker image to a registry.
 
-In this case, we're pushing to the Docker Hub
+Make sure to provide log in credentials to your docker host first:
+
+```
+docker login <registry>
+```
+
+Where the image will be pushed, depends on your `$DOCKER_REPO` value:
 ```
 docker push $DOCKER_REPO/flask_app:1.0
 ```
 
 ## Deploying to Kubernetes
 
-For private registries, create a pull secret with your credentials first:
+We will first explore an imperative way of deploying our application on Kubernetes.
+
+After this, we will learn how to manage and save our Deployment to facilitate collaboration on the deployment with others.
+
+Before this, we have to ensure Kubernetes can pull our application image if our docker image is privately hosted.
+
+### Pulling Images from a private registry
+
+To pull from a private registry Kubernetes will need the registry credentials.
+
+First, use `kubectl` to create a secret of type `docker-registry` with your credentials:
 ```
-kubectl create secret docker-registry regsecret --docker-server=<your-registry-server> --docker-username=<your-name> --docker-password=<your-pword> --docker-email=<your-email>
+kubectl create secret docker-registry honestbee-registry --docker-server=<your-registry-server> --docker-username=<your-name> --docker-password=<your-pword> --docker-email=<your-email>
 ```
 
-and [add imagePullSecret to default service account](https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/#adding-imagepullsecrets-to-a-service-account)
+Above, we created a secret named `honestbee-registry`. We will need to tell Kubernetes to use this secret while pulling images.
 
-Oneliner:
+imagePullSecrets can be defined per `Deployment` or alternatively the secret can be [added as an imagePullSecret to the default service account](https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/#adding-imagepullsecrets-to-a-service-account)
+
+Service accounts are used by Pod resources to complete their tasks. A default Service account called `default` is made available
+in every namespace by the Service Account Controller.
+
+To update the default service account, ensure you have [`jq`](https://stedolan.github.io/jq) installed.
+
+Run following command:
 ```
 kubectl get serviceaccounts default -o json |
      jq  'del(.metadata.resourceVersion)'|
      jq 'setpath(["imagePullSecrets"];[{"name":"regsecret"}])' |
      kubectl replace serviceaccount default -f -
 ```
+Note: The `metadata.resourceVersion` field is used by the API server for optimistic concurrency. We are removing the `resourceVersion` and adding the `imagePullSecret` in the above oneliner.
+
+## Creating the Kubernetes deployment
 
 Imperatively create a Kubernetes Deployment for the application by supplying:
 
@@ -117,6 +143,9 @@ open http://localhost:5000
 ```
 **NOTE**: Once done, kill the port forwarding proxy as follows
 ```bash
+# list all background jobs
+jobs -l
+# kill the job running the port forward %<job_nr>
 kill -INT %1
 ```
 
