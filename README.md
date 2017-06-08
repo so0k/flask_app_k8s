@@ -70,7 +70,7 @@ Before this, we have to ensure Kubernetes can pull our application image if our 
 
 ### Pulling Images from a private registry
 
-To pull from a private registry Kubernetes will need the registry credentials.
+To pull from a private registry, Kubernetes will need the registry credentials.
 
 First, use `kubectl` to create a secret of type `docker-registry` with your credentials:
 ```
@@ -90,7 +90,7 @@ Run following command:
 ```
 kubectl get serviceaccounts default -o json |
      jq  'del(.metadata.resourceVersion)'|
-     jq 'setpath(["imagePullSecrets"];[{"name":"regsecret"}])' |
+     jq 'setpath(["imagePullSecrets"];[{"name":"honestbee-registry"}])' |
      kubectl replace serviceaccount default -f -
 ```
 Note: The `metadata.resourceVersion` field is used by the API server for optimistic concurrency. We are removing the `resourceVersion` and adding the `imagePullSecret` in the above oneliner.
