@@ -93,7 +93,8 @@ kubectl get serviceaccounts default -o json |
      jq 'setpath(["imagePullSecrets"];[{"name":"honestbee-registry"}])' |
      kubectl replace serviceaccount default -f -
 ```
-Note: The `metadata.resourceVersion` field is used by the API server for optimistic concurrency. We are removing the `resourceVersion` and adding the `imagePullSecret` in the above oneliner.
+Note: The `metadata.resourceVersion` field is used by the API server for optimistic concurrency. We are removing the `resourceVersion` and adding the `imagePullSecret` in the above oneliner. We are also replacing the default serviceaccount
+with the modified json object streamed through stdin (`-`)
 
 ### Creating the Kubernetes deployment
 
