@@ -16,6 +16,7 @@ image:
   repository: swo0k/flask-demo-app
   tag: master
   pullPolicy: Always
+  digest: "" #empty by default
 
 images: 
   images.txt: "https://i.imgur.com/9j2KoIO.jpg\r\nhttps://i.imgur.com/dVDX3BZ.jpg"
@@ -45,6 +46,7 @@ keel:
   images:
     - repository: image.repository # resolves during runtime
       tag: image.tag               # 
+      digest: image.digest
 
 service:
   type: ClusterIP

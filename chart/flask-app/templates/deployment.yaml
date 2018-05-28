@@ -19,7 +19,7 @@ spec:
         app: {{ template "flask-app.name" . }}
         release: {{ .Release.Name }}
       annotations:
-        date/deploy-date: {{ now | quote }}
+        image/last-digest: {{ .Values.image.digest | quote }}
     spec:
       {{- if .Values.imageCredentials.private }}
       imagePullSecrets:
