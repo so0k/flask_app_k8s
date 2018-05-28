@@ -9,7 +9,7 @@ Added some type of config file to play with Kubernetes ConfigMaps
 Build the image
 ```
 export DOCKER_REPO=<docker-hub-user>
-docker build -t $DOCKER_REPO/flask_app:1.0 .
+docker build -t $DOCKER_REPO/flask-demo-app:master .
 ```
 
 - `-t` is the tag we give the image, this is used for running containers from the image.
@@ -24,7 +24,7 @@ docker build -t $DOCKER_REPO/flask_app:1.0 .
 
 Run a container from the Docker Image
 ```
-docker run -d --name money_machine -p 5000:5000 $DOCKER_REPO/flask_app:1.0
+docker run -d --name money_machine -p 5000:5000 $DOCKER_REPO/flask-demo-app:master
 open http://localhost:5000
 ```
 
@@ -57,7 +57,7 @@ docker login <registry>
 
 Where the image will be pushed, depends on your `$DOCKER_REPO` value:
 ```
-docker push $DOCKER_REPO/flask_app:1.0
+docker push $DOCKER_REPO/flask-demo-app:master
 ```
 
 ## Deploying to Kubernetes
@@ -74,10 +74,10 @@ To pull from a private registry, Kubernetes will need the registry credentials.
 
 First, use `kubectl` to create a secret of type `docker-registry` with your credentials:
 ```
-kubectl create secret docker-registry honestbee-registry --docker-server=<your-registry-server> --docker-username=<your-name> --docker-password=<your-pword> --docker-email=<your-email>
+kubectl create secret docker-registry my-registry --docker-server=<your-registry-server> --docker-username=<your-name> --docker-password=<your-pword> --docker-email=<your-email>
 ```
 
-Above, we created a secret named `honestbee-registry`. We will need to tell Kubernetes to use this secret while pulling images.
+Above, we created a secret named `my-registry`. We will need to tell Kubernetes to use this secret while pulling images.
 
 imagePullSecrets can be defined per `Deployment` or alternatively the secret can be [added as an imagePullSecret to the default service account](https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/#adding-imagepullsecrets-to-a-service-account)
 
@@ -90,7 +90,7 @@ Run following command:
 ```
 kubectl get serviceaccounts default -o json |
      jq  'del(.metadata.resourceVersion)'|
-     jq 'setpath(["imagePullSecrets"];[{"name":"honestbee-registry"}])' |
+     jq 'setpath(["imagePullSecrets"];[{"name":"my-registry"}])' |
      kubectl replace serviceaccount default -f -
 ```
 Note: The `metadata.resourceVersion` field is used by the API server for optimistic concurrency. We are removing the `resourceVersion` and adding the `imagePullSecret` in the above oneliner. We are also replacing the default serviceaccount
@@ -105,7 +105,7 @@ Imperatively create a Kubernetes Deployment for the application by supplying:
 - Ports to be exposed on the Pods created by the deployment
 
 ```bash
-kubectl run app --image=$DOCKER_REPO/flask_app:1.0 --port=5000
+kubectl run app --image=$DOCKER_REPO/flask-demo-app:master --port=5000
 ```
 
 Inspect the Resources created by the above command using the Kubernetes UI.

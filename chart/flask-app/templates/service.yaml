@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "flask-app.fullname" . }}
+  labels:
+    app: {{ template "flask-app.name" . }}
+    chart: {{ template "flask-app.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    app: {{ template "flask-app.name" . }}
+    release: {{ .Release.Name }}

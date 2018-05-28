@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
       - name: gunicorn
-        image: vincentdesmet/flask_app:1.0
+        image: swatrider/flask-demo-app:master
         ports:
         - containerPort: 5000
           protocol: TCP

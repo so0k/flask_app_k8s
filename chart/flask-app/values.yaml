@@ -1,0 +1,82 @@
+# Default values for flask_app.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 3
+
+# # keel k8s provider config
+# labels:
+#   keel.sh/trigger: force
+#   keel.sh/trigger: "poll"
+#   keel.sh/approvals: "1"
+# annotations:
+#   keel.sh/pollSchedule: "@every 10m"
+
+image:
+  repository: swo0k/flask-demo-app
+  tag: master
+  pullPolicy: Always
+
+images: 
+  images.txt: "https://i.imgur.com/9j2KoIO.jpg\r\nhttps://i.imgur.com/dVDX3BZ.jpg"
+
+# Docker registry details used to pull all images
+imageCredentials:
+  private: false
+  registry: docker.io
+  username: notarealuser
+  password: notapassword
+
+# keel helm provider config
+keel:
+  # keel policy (all/major/minor/patch/force)
+  policy: force
+  # trigger type, defaults to events such as pubsub, webhooks
+  trigger: poll
+  pollSchedule: "@every 10s"
+  # # Minimum required approvals
+  # approvals: 1
+  # # Deadline in hours
+  # approvalDeadline: 1
+  # # additional notification channels
+  # notificationChannels: 
+  #   - devops-feed
+  # images to track and update
+  images:
+    - repository: image.repository # resolves during runtime
+      tag: image.tag               # 
+
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: false
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  path: /
+  hosts:
+    - flask-sample.swatmobile.io
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
+
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #  cpu: 100m
+  #  memory: 128Mi
+  # requests:
+  #  cpu: 100m
+  #  memory: 128Mi
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
